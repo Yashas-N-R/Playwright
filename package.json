@@ -1,0 +1,10 @@
+{
+  "name": "bit-website",
+  "version": "1.0.0",
+  "description": "BIT — Build It Together. QA by profession, developer by passion.",
+  "private": true,
+  "scripts": {
+    "dev": "npx serve .",
+    "build": "echo 'Static site — no build step required'"
+  }
+}
