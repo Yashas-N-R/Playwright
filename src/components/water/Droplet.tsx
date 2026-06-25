@@ -1,98 +1,107 @@
 import {
   forwardRef,
   useImperativeHandle,
+  useMemo,
   useRef,
 } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
-import type { WaterUniforms } from "./types";
+import { createTeardropGeometry } from "./teardropGeometry";
 
 export interface DropletHandle {
   drop: () => void;
 }
 
 interface Props {
-  uniforms: WaterUniforms;
   onImpact: () => void;
-  addRipple: (x: number, z: number, time: number) => void;
 }
 
-const START_Y = 4.2;
-const END_Y = 0.0;
-const FALL_DURATION = 0.65;
+const START_Y = 3.2;
+const SURFACE_Y = 0.02;
+const FALL_DURATION = 0.72;
+const IMPACT_DURATION = 0.14;
 
-// water-blue palette
-const DROP_COLOR = "#3b82f6";
-const DROP_EMISSIVE = "#1d4ed8";
+type DropPhase = "idle" | "falling" | "impact";
 
 const Droplet = forwardRef<DropletHandle, Props>(function Droplet(
-  { uniforms, onImpact, addRipple },
+  { onImpact },
   ref,
 ) {
   const meshRef = useRef<THREE.Mesh>(null);
-  const stateRef = useRef<{ active: boolean; startTime: number }>({
-    active: false,
-    startTime: 0,
-  });
+  const phaseRef = useRef<DropPhase>("idle");
+  const startRef = useRef(0);
+  const clockRef = useRef(0);
+
+  const geometry = useMemo(() => createTeardropGeometry(), []);
 
   useImperativeHandle(ref, () => ({
     drop() {
-      stateRef.current = {
-        active: true,
-        startTime: uniforms.uTime.value,
-      };
-      if (meshRef.current) {
-        meshRef.current.visible = true;
-        meshRef.current.position.set(0, START_Y, 0);
-        meshRef.current.scale.set(1, 1, 1);
+      phaseRef.current = "falling";
+      startRef.current = clockRef.current;
+      const mesh = meshRef.current;
+      if (mesh) {
+        mesh.visible = true;
+        mesh.position.set(0, START_Y, 0);
+        mesh.rotation.set(0, 0, 0);
+        mesh.scale.set(1, 1, 1);
       }
     },
   }));
 
-  const spawnRipples = (t: number) => {
-    // primary impact + two soft trailing echoes for a natural spread
-    addRipple(0, 0, t);
-    addRipple(0, 0, t + 0.18);
-    addRipple(0.08, 0.05, t + 0.38);
-  };
-
-  useFrame(() => {
+  useFrame((_, delta) => {
+    clockRef.current += delta;
     const mesh = meshRef.current;
-    const st = stateRef.current;
-    if (!st.active || !mesh) return;
+    if (!mesh || phaseRef.current === "idle") return;
 
-    const elapsed = uniforms.uTime.value - st.startTime;
+    const elapsed = clockRef.current - startRef.current;
 
-    if (elapsed >= FALL_DURATION) {
-      mesh.visible = false;
-      st.active = false;
-      spawnRipples(uniforms.uTime.value);
-      onImpact();
+    if (phaseRef.current === "falling") {
+      const t = Math.min(elapsed / FALL_DURATION, 1);
+      const gravity = t * t * t;
+      mesh.position.y = START_Y + (SURFACE_Y - START_Y) * gravity;
+
+      // slight wobble — feels like liquid, not a rigid ball
+      mesh.rotation.z = Math.sin(elapsed * 6) * 0.04 * (1 - t);
+      mesh.rotation.x = Math.sin(elapsed * 4.5) * 0.03 * (1 - t);
+
+      if (t >= 1) {
+        phaseRef.current = "impact";
+        startRef.current = clockRef.current;
+      }
       return;
     }
 
-    const t = elapsed / FALL_DURATION;
-    // ease-in gravity curve
-    const eased = t * t;
-    mesh.position.y = START_Y + (END_Y - START_Y) * eased;
+    if (phaseRef.current === "impact") {
+      const t = Math.min(elapsed / IMPACT_DURATION, 1);
+      // flatten into the surface like real water hitting
+      mesh.position.y = SURFACE_Y - t * 0.025;
+      mesh.scale.set(1 + t * 0.55, 1 - t * 0.82, 1 + t * 0.55);
+      mesh.rotation.z *= 1 - t;
 
-    // subtle teardrop stretch as it falls
-    const stretch = 1 + t * 0.35;
-    const squish = 1 - t * 0.12;
-    mesh.scale.set(squish, stretch, squish);
+      if (t >= 1) {
+        mesh.visible = false;
+        phaseRef.current = "idle";
+        onImpact();
+      }
+    }
   });
 
   return (
-    <mesh ref={meshRef} position={[0, START_Y, 0]} visible={false}>
-      <sphereGeometry args={[0.13, 32, 32]} />
-      <meshStandardMaterial
-        color={DROP_COLOR}
-        emissive={DROP_EMISSIVE}
-        emissiveIntensity={0.35}
-        roughness={0.15}
-        metalness={0.05}
+    <mesh ref={meshRef} geometry={geometry} visible={false} castShadow>
+      <meshPhysicalMaterial
+        color="#5eb3f5"
+        transmission={0.92}
+        thickness={0.18}
+        roughness={0.04}
+        metalness={0}
+        ior={1.33}
         transparent
-        opacity={0.92}
+        opacity={1}
+        clearcoat={0.9}
+        clearcoatRoughness={0.08}
+        attenuationColor="#1a4a7a"
+        attenuationDistance={0.35}
+        envMapIntensity={0.6}
       />
     </mesh>
   );

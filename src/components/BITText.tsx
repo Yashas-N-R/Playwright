@@ -76,7 +76,7 @@ export default function BITText({ phase }: Props) {
     <motion.h1
       layout
       transition={{ duration: 0.6, ease: [0.65, 0, 0.35, 1] }}
-      className="font-sans font-black tracking-tight text-white leading-none whitespace-nowrap select-none drop-shadow-[0_0_60px_rgba(59,130,246,0.12)]"
+      className="font-sans font-black tracking-tight text-white leading-none whitespace-nowrap select-none"
       style={{
         fontSize: "clamp(4.5rem, 14vw, 11rem)",
         letterSpacing: expanded ? "-0.04em" : "-0.05em",
