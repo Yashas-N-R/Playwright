@@ -11,35 +11,35 @@ interface Props {
   onImpact: () => void;
 }
 
-const START_Y = 5.5;
-const SURFACE_Y = 0.0;
-const FALL_DURATION = 0.85;
-const IMPACT_DURATION = 0.18;
+// Start high enough to be in upper frame, fall to surface
+const START_Y   = 7.0;
+const SURFACE_Y = 0.05;
+const FALL_DUR  = 0.90;   // seconds
+const SPLAT_DUR = 0.16;   // squish-into-surface duration
 
-type Phase = "idle" | "falling" | "impact";
+type Phase = "idle" | "falling" | "splat";
 
 const Droplet = forwardRef<DropletHandle, Props>(function Droplet(
   { onImpact },
   ref,
 ) {
-  const meshRef = useRef<THREE.Mesh>(null);
+  const meshRef  = useRef<THREE.Mesh>(null);
   const phaseRef = useRef<Phase>("idle");
   const startRef = useRef(0);
   const clockRef = useRef(0);
 
   const geometry = useMemo(() => createTeardropGeometry(), []);
-
   const material = useMemo(
     () =>
       new THREE.MeshStandardMaterial({
-        color: new THREE.Color("#48aaff"),
-        emissive: new THREE.Color("#0a3a6e"),
-        emissiveIntensity: 0.3,
-        roughness: 0.05,
-        metalness: 0.08,
-        transparent: true,
-        opacity: 0.82,
-        side: THREE.FrontSide,
+        color:            new THREE.Color("#5bb8ff"),
+        emissive:         new THREE.Color("#0c2d5e"),
+        emissiveIntensity: 0.25,
+        roughness:        0.04,
+        metalness:        0.0,
+        transparent:      true,
+        opacity:          0.80,
+        side:             THREE.FrontSide,
       }),
     [],
   );
@@ -53,7 +53,7 @@ const Droplet = forwardRef<DropletHandle, Props>(function Droplet(
       mesh.visible = true;
       mesh.position.set(0, START_Y, 0);
       mesh.rotation.set(0, 0, 0);
-      mesh.scale.set(1, 1, 1);
+      mesh.scale.setScalar(1);
     },
   }));
 
@@ -65,35 +65,34 @@ const Droplet = forwardRef<DropletHandle, Props>(function Droplet(
     const elapsed = clockRef.current - startRef.current;
 
     if (phaseRef.current === "falling") {
-      const t = Math.min(elapsed / FALL_DURATION, 1);
-      // Gravity: accelerate as it falls
-      const eased = t * t;
-      mesh.position.y = START_Y + (SURFACE_Y - START_Y) * eased;
+      const t       = Math.min(elapsed / FALL_DUR, 1);
+      const gravity = t * t;                           // accelerate downward
+      mesh.position.y = START_Y + (SURFACE_Y - START_Y) * gravity;
 
-      // Subtle liquid wobble — less rigid than a ball
-      mesh.rotation.z = Math.sin(elapsed * 5.5) * 0.06 * (1 - t);
-      mesh.rotation.x = Math.sin(elapsed * 3.8) * 0.04 * (1 - t);
+      // Tiny liquid wobble — not a rigid ball
+      mesh.rotation.z = Math.sin(elapsed * 5.0) * 0.05 * (1 - t);
+      mesh.rotation.x = Math.sin(elapsed * 3.5) * 0.03 * (1 - t);
 
-      // Slight vertical stretch from drag
-      const stretchY = 1 + t * 0.18;
-      const squishXZ = 1 - t * 0.07;
+      // Streamline: stretch vertically as it picks up speed
+      const stretchY  = 1 + t * 0.22;
+      const squishXZ  = 1 - t * 0.09;
       mesh.scale.set(squishXZ, stretchY, squishXZ);
 
       if (t >= 1) {
-        phaseRef.current = "impact";
-        startRef.current = clockRef.current;
+        phaseRef.current = "splat";
+        startRef.current  = clockRef.current;
       }
       return;
     }
 
-    if (phaseRef.current === "impact") {
-      const t = Math.min(elapsed / IMPACT_DURATION, 1);
-      // Flatten: squish vertically, spread horizontally like water hitting a surface
-      mesh.position.y = SURFACE_Y - t * 0.04;
-      mesh.scale.set(1 + t * 1.4, 1 - t * 0.95, 1 + t * 1.4);
+    if (phaseRef.current === "splat") {
+      // Flatten fast — drop merges into the water surface
+      const t = Math.min(elapsed / SPLAT_DUR, 1);
+      mesh.scale.set(1 + t * 1.6, 1 - t * 0.97, 1 + t * 1.6);
+      mesh.position.y = SURFACE_Y - t * 0.05;
 
       if (t >= 1) {
-        mesh.visible = false;
+        mesh.visible     = false;
         phaseRef.current = "idle";
         onImpact();
       }
