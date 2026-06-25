@@ -1,43 +1,25 @@
 import {
   forwardRef,
-  useCallback,
   useImperativeHandle,
-  useMemo,
   useRef,
 } from "react";
 import { Canvas } from "@react-three/fiber";
-import WaterPlane from "./WaterPlane";
+import { Environment } from "@react-three/drei";
 import Droplet, { DropletHandle } from "./Droplet";
-import { createWaterUniforms, MAX_RIPPLES } from "./types";
 
 export interface WaterSceneHandle {
   dropDroplet: () => void;
 }
 
 interface Props {
-  onSplash: () => void;
+  onImpact: () => void;
 }
 
 const WaterScene = forwardRef<WaterSceneHandle, Props>(function WaterScene(
-  { onSplash },
+  { onImpact },
   ref,
 ) {
-  const uniforms = useMemo(() => createWaterUniforms(), []);
-  const rippleIndexRef = useRef(0);
   const dropletRef = useRef<DropletHandle>(null);
-
-  const addRipple = useCallback(
-    (x: number, z: number, time: number) => {
-      const slot = rippleIndexRef.current % MAX_RIPPLES;
-      uniforms.uRipples.value[slot].set(x, z, time);
-      rippleIndexRef.current += 1;
-      uniforms.uRippleCount.value = Math.min(
-        rippleIndexRef.current,
-        MAX_RIPPLES,
-      );
-    },
-    [uniforms],
-  );
 
   useImperativeHandle(
     ref,
@@ -51,23 +33,19 @@ const WaterScene = forwardRef<WaterSceneHandle, Props>(function WaterScene(
 
   return (
     <Canvas
-      camera={{ position: [0, 4.2, 8.5], fov: 42, near: 0.1, far: 100 }}
-      dpr={[1, 2]}
-      gl={{ antialias: true, alpha: false }}
-      style={{ background: "#000000" }}
+      camera={{ position: [0, 1.8, 5.5], fov: 38, near: 0.1, far: 50 }}
+      dpr={[1, 1.5]}
+      gl={{ antialias: true, alpha: true }}
+      style={{ background: "transparent" }}
     >
-      <color attach="background" args={["#000000"]} />
-      <ambientLight intensity={0.5} />
-      <directionalLight position={[3, 8, 4]} intensity={0.8} color="#ffffff" />
-      <pointLight position={[0, 3, 0]} intensity={1.2} color="#ffffff" />
+      {/* just enough light to catch the glass edges — no glow */}
+      <ambientLight intensity={0.15} />
+      <directionalLight position={[2, 6, 3]} intensity={0.45} color="#c8dff5" />
+      <directionalLight position={[-3, 2, -2]} intensity={0.12} color="#6090c0" />
 
-      <WaterPlane uniforms={uniforms} />
-      <Droplet
-        ref={dropletRef}
-        uniforms={uniforms}
-        onImpact={onSplash}
-        addRipple={addRipple}
-      />
+      <Environment preset="night" />
+
+      <Droplet ref={dropletRef} onImpact={onImpact} />
     </Canvas>
   );
 });

@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import WaterScene, { WaterSceneHandle } from "./water/WaterScene";
+import RippleOverlay, { RippleOverlayHandle } from "./water/RippleOverlay";
 import BITText, { BITPhase } from "./BITText";
 
 export default function Hero() {
   const sceneRef = useRef<WaterSceneHandle>(null);
+  const rippleRef = useRef<RippleOverlayHandle>(null);
   const [phase, setPhase] = useState<BITPhase>("idle");
   const timersRef = useRef<number[]>([]);
 
@@ -18,7 +20,8 @@ export default function Hero() {
     sceneRef.current?.dropDroplet();
   }, [clearTimers]);
 
-  const onSplash = useCallback(() => {
+  const onImpact = useCallback(() => {
+    rippleRef.current?.splash();
     setPhase("expanding");
     timersRef.current.push(
       window.setTimeout(() => setPhase("expanded"), 900),
@@ -28,7 +31,7 @@ export default function Hero() {
   }, []);
 
   useEffect(() => {
-    const initial = window.setTimeout(() => triggerSequence(), 600);
+    const initial = window.setTimeout(() => triggerSequence(), 700);
     return () => {
       window.clearTimeout(initial);
       clearTimers();
@@ -41,14 +44,17 @@ export default function Hero() {
       className="relative w-full h-screen overflow-hidden bg-black"
     >
       <div className="absolute inset-0">
-        <WaterScene ref={sceneRef} onSplash={onSplash} />
+        <WaterScene ref={sceneRef} onImpact={onImpact} />
       </div>
 
+      <RippleOverlay ref={rippleRef} />
+
+      {/* subtle vignette only — no colored glow */}
       <div
-        className="absolute inset-0 pointer-events-none"
+        className="absolute inset-0 pointer-events-none z-[4]"
         style={{
           background:
-            "radial-gradient(ellipse 60% 50% at 50% 60%, rgba(255,255,255,0.04) 0%, rgba(0,0,0,0) 70%), linear-gradient(180deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0) 30%, rgba(0,0,0,0) 70%, rgba(0,0,0,0.6) 100%)",
+            "radial-gradient(ellipse 70% 60% at 50% 55%, transparent 40%, rgba(0,0,0,0.55) 100%)",
         }}
       />
 
