@@ -57,9 +57,19 @@ const WaterScene = forwardRef<WaterSceneHandle, Props>(function WaterScene(
       style={{ background: "#000000" }}
     >
       <color attach="background" args={["#000000"]} />
-      <ambientLight intensity={0.5} />
-      <directionalLight position={[3, 8, 4]} intensity={0.8} color="#ffffff" />
-      <pointLight position={[0, 3, 0]} intensity={1.2} color="#ffffff" />
+      <ambientLight intensity={0.25} />
+      <directionalLight
+        position={[3, 8, 4]}
+        intensity={0.35}
+        color="#93c5fd"
+      />
+      <pointLight
+        position={[0, 2.5, 1]}
+        intensity={0.5}
+        color="#3b82f6"
+        distance={12}
+        decay={2}
+      />
 
       <WaterPlane uniforms={uniforms} />
       <Droplet

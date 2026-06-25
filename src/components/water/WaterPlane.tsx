@@ -1,4 +1,5 @@
 import { useFrame } from "@react-three/fiber";
+import * as THREE from "three";
 import { vertexShader, fragmentShader } from "./shaders";
 import type { WaterUniforms } from "./types";
 
@@ -10,7 +11,7 @@ export default function WaterPlane({ uniforms }: Props) {
   useFrame((_, delta) => {
     uniforms.uTime.value += delta;
     if (uniforms.uIntro.value < 1) {
-      uniforms.uIntro.value = Math.min(1, uniforms.uIntro.value + delta * 1.4);
+      uniforms.uIntro.value = Math.min(1, uniforms.uIntro.value + delta * 0.7);
     }
   });
 
@@ -23,6 +24,8 @@ export default function WaterPlane({ uniforms }: Props) {
         vertexShader={vertexShader}
         fragmentShader={fragmentShader}
         transparent
+        depthWrite={false}
+        blending={THREE.NormalBlending}
       />
     </mesh>
   );

@@ -17,9 +17,13 @@ interface Props {
   addRipple: (x: number, z: number, time: number) => void;
 }
 
-const START_Y = 4.8;
+const START_Y = 4.2;
 const END_Y = 0.0;
-const FALL_DURATION = 0.55;
+const FALL_DURATION = 0.65;
+
+// water-blue palette
+const DROP_COLOR = "#3b82f6";
+const DROP_EMISSIVE = "#1d4ed8";
 
 const Droplet = forwardRef<DropletHandle, Props>(function Droplet(
   { uniforms, onImpact, addRipple },
@@ -45,6 +49,13 @@ const Droplet = forwardRef<DropletHandle, Props>(function Droplet(
     },
   }));
 
+  const spawnRipples = (t: number) => {
+    // primary impact + two soft trailing echoes for a natural spread
+    addRipple(0, 0, t);
+    addRipple(0, 0, t + 0.18);
+    addRipple(0.08, 0.05, t + 0.38);
+  };
+
   useFrame(() => {
     const mesh = meshRef.current;
     const st = stateRef.current;
@@ -55,29 +66,33 @@ const Droplet = forwardRef<DropletHandle, Props>(function Droplet(
     if (elapsed >= FALL_DURATION) {
       mesh.visible = false;
       st.active = false;
-      addRipple(0, 0, uniforms.uTime.value);
+      spawnRipples(uniforms.uTime.value);
       onImpact();
       return;
     }
 
     const t = elapsed / FALL_DURATION;
-    const eased = t * t * (1 + t * 0.3);
-    mesh.position.y = START_Y + (END_Y - START_Y) * Math.min(eased, 1);
+    // ease-in gravity curve
+    const eased = t * t;
+    mesh.position.y = START_Y + (END_Y - START_Y) * eased;
 
-    const stretch = 1 + (1 - t) * 0.0 + t * 0.6;
-    const squish = 1 - t * 0.25;
+    // subtle teardrop stretch as it falls
+    const stretch = 1 + t * 0.35;
+    const squish = 1 - t * 0.12;
     mesh.scale.set(squish, stretch, squish);
   });
 
   return (
     <mesh ref={meshRef} position={[0, START_Y, 0]} visible={false}>
-      <sphereGeometry args={[0.16, 32, 32]} />
+      <sphereGeometry args={[0.13, 32, 32]} />
       <meshStandardMaterial
-        color={"#ffffff"}
-        emissive={"#ffffff"}
-        emissiveIntensity={2.5}
-        roughness={0.1}
-        metalness={0}
+        color={DROP_COLOR}
+        emissive={DROP_EMISSIVE}
+        emissiveIntensity={0.35}
+        roughness={0.15}
+        metalness={0.05}
+        transparent
+        opacity={0.92}
       />
     </mesh>
   );

@@ -17,23 +17,32 @@ export const vertexShader = /* glsl */ `
       if (i >= uRippleCount) break;
       vec3 r = uRipples[i];
       float age = uTime - r.z;
-      if (age < 0.0 || age > 6.0) continue;
+      if (age < 0.0 || age > 8.0) continue;
 
       float d = distance(pos.xy, r.xy);
-      float ringRadius = age * 1.8;
-      float ringWidth = 0.55 + age * 0.18;
+
+      // slower, wider rings — closer to real water propagation
+      float ringRadius = age * 1.15;
+      float ringWidth = 0.9 + age * 0.35;
       float envelope = exp(-pow((d - ringRadius) / ringWidth, 2.0));
-      float damp = exp(-age * 0.5);
-      float phase = (d - ringRadius) * 7.0 - age * 5.0;
+
+      // gentle decay so ripples fade out naturally
+      float damp = exp(-age * 0.38);
+
+      // lower frequency = smoother, less "strobing" waves
+      float phase = (d - ringRadius) * 4.2 - age * 2.8;
       float osc = sin(phase);
-      float wave = envelope * damp * osc * 0.24;
+
+      // soft harmonic for a more organic feel
+      float harmonic = sin(phase * 1.6 + 0.4) * 0.25;
+      float wave = envelope * damp * (osc + harmonic) * 0.09;
 
       height += wave;
-      slope += envelope * damp * cos(phase) * 7.0;
+      slope += envelope * damp * cos(phase) * 3.5;
     }
 
-    // very subtle ambient surface motion
-    height += sin(pos.x * 0.4 + uTime * 0.25) * sin(pos.y * 0.5 + uTime * 0.3) * 0.004;
+    // barely-there ambient surface drift
+    height += sin(pos.x * 0.25 + uTime * 0.18) * sin(pos.y * 0.3 + uTime * 0.22) * 0.002;
 
     pos.z += height;
     vHeight = height;
@@ -55,19 +64,23 @@ export const fragmentShader = /* glsl */ `
 
   void main() {
     float dist = length(vWorldPos.xz);
-    float vignette = 1.0 - smoothstep(6.0, 16.0, dist);
+    float vignette = 1.0 - smoothstep(5.0, 18.0, dist);
 
-    // bright on crests + slope edges
-    float amp = abs(vHeight) * 5.0;
-    float edge = abs(vSlope) * 0.18;
-    float intensity = pow(amp + edge, 0.85);
+    // much softer highlight — crests only, not full white blast
+    float amp = abs(vHeight) * 2.2;
+    float edge = abs(vSlope) * 0.06;
+    float intensity = pow(amp + edge, 1.4);
 
-    // faint base glow near origin so the plane is barely visible at rest
-    float base = exp(-dist * 0.18) * 0.04;
+    // faint cool-blue pool glow at center, barely visible at rest
+    float base = exp(-dist * 0.22) * 0.018;
 
-    float c = (intensity + base) * vignette * uIntro;
-    c = clamp(c, 0.0, 1.0);
+    float alpha = clamp((intensity + base) * vignette * uIntro, 0.0, 0.42);
 
-    gl_FragColor = vec4(vec3(c), 1.0);
+    // soft water-blue tint instead of harsh white
+    vec3 waterColor = vec3(0.22, 0.48, 0.82);
+    vec3 highlight  = vec3(0.55, 0.72, 0.95);
+    vec3 color = mix(waterColor, highlight, intensity * 0.55) * alpha;
+
+    gl_FragColor = vec4(color, alpha);
   }
 `;
