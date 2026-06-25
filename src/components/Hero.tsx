@@ -1,13 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import WaterScene, { WaterSceneHandle } from "./water/WaterScene";
-import RippleOverlay, { RippleOverlayHandle } from "./water/RippleOverlay";
 import BITText, { BITPhase } from "./BITText";
 
 export default function Hero() {
-  const sceneRef = useRef<WaterSceneHandle>(null);
-  const rippleRef = useRef<RippleOverlayHandle>(null);
+  const sceneRef   = useRef<WaterSceneHandle>(null);
   const [phase, setPhase] = useState<BITPhase>("idle");
-  const timersRef = useRef<number[]>([]);
+  const timersRef  = useRef<number[]>([]);
 
   const clearTimers = useCallback(() => {
     timersRef.current.forEach((t) => window.clearTimeout(t));
@@ -21,19 +19,18 @@ export default function Hero() {
   }, [clearTimers]);
 
   const onImpact = useCallback(() => {
-    rippleRef.current?.splash();
     setPhase("expanding");
     timersRef.current.push(
-      window.setTimeout(() => setPhase("expanded"), 900),
-      window.setTimeout(() => setPhase("merging"), 3200),
-      window.setTimeout(() => setPhase("idle"), 4100),
+      window.setTimeout(() => setPhase("expanded"),  900),
+      window.setTimeout(() => setPhase("merging"),  3200),
+      window.setTimeout(() => setPhase("idle"),     4100),
     );
   }, []);
 
   useEffect(() => {
-    const initial = window.setTimeout(() => triggerSequence(), 700);
+    const t = window.setTimeout(() => triggerSequence(), 700);
     return () => {
-      window.clearTimeout(initial);
+      window.clearTimeout(t);
       clearTimers();
     };
   }, [triggerSequence, clearTimers]);
@@ -43,21 +40,21 @@ export default function Hero() {
       id="top"
       className="relative w-full h-screen overflow-hidden bg-black"
     >
+      {/* 3D canvas fills the whole hero — water plane + droplet */}
       <div className="absolute inset-0">
         <WaterScene ref={sceneRef} onImpact={onImpact} />
       </div>
 
-      <RippleOverlay ref={rippleRef} />
-
-      {/* subtle vignette only — no colored glow */}
+      {/* Vignette — keeps edges dark, no coloured tint */}
       <div
         className="absolute inset-0 pointer-events-none z-[4]"
         style={{
           background:
-            "radial-gradient(ellipse 70% 60% at 50% 55%, transparent 40%, rgba(0,0,0,0.55) 100%)",
+            "radial-gradient(ellipse 75% 65% at 50% 50%, transparent 35%, rgba(0,0,0,0.62) 100%)",
         }}
       />
 
+      {/* Text overlay */}
       <div className="relative z-10 h-full flex flex-col items-center justify-center pointer-events-none">
         <p className="font-mono text-[10px] sm:text-xs tracking-[0.4em] text-white/40 mb-8 uppercase">
           Build It Together
@@ -65,7 +62,7 @@ export default function Hero() {
 
         <button
           onClick={triggerSequence}
-          className="pointer-events-auto group cursor-pointer select-none focus:outline-none"
+          className="pointer-events-auto cursor-pointer select-none focus:outline-none"
           aria-label="Trigger water ripple animation"
         >
           <BITText phase={phase} />

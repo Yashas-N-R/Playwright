@@ -1,6 +1,14 @@
-import { forwardRef, useImperativeHandle, useRef } from "react";
+import {
+  forwardRef,
+  useCallback,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+} from "react";
 import { Canvas } from "@react-three/fiber";
+import WaterPlane from "./WaterPlane";
 import Droplet, { DropletHandle } from "./Droplet";
+import { createWaterUniforms, MAX_RIPPLES } from "./types";
 
 export interface WaterSceneHandle {
   dropDroplet: () => void;
@@ -14,37 +22,44 @@ const WaterScene = forwardRef<WaterSceneHandle, Props>(function WaterScene(
   { onImpact },
   ref,
 ) {
-  const dropletRef = useRef<DropletHandle>(null);
+  const uniforms      = useMemo(() => createWaterUniforms(), []);
+  const rippleIdx     = useRef(0);
+  const dropletRef    = useRef<DropletHandle>(null);
+
+  const spawnRipple = useCallback(() => {
+    const slot = rippleIdx.current % MAX_RIPPLES;
+    uniforms.uRipples.value[slot].set(0, 0, uniforms.uTime.value);
+    rippleIdx.current++;
+    uniforms.uRippleCount.value = Math.min(rippleIdx.current, MAX_RIPPLES);
+  }, [uniforms]);
+
+  const handleImpact = useCallback(() => {
+    spawnRipple();
+    onImpact();
+  }, [spawnRipple, onImpact]);
 
   useImperativeHandle(ref, () => ({
-    dropDroplet() {
-      dropletRef.current?.drop();
-    },
+    dropDroplet() { dropletRef.current?.drop(); },
   }), []);
 
   return (
     <Canvas
-      camera={{ position: [0, 3.0, 9.5], fov: 42, near: 0.1, far: 80 }}
+      camera={{ position: [0, 5.5, 11.5], fov: 48, near: 0.1, far: 120 }}
       dpr={[1, 2]}
-      gl={{ antialias: true, alpha: true }}
-      style={{ background: "transparent" }}
+      gl={{ antialias: true, alpha: false }}
+      style={{ background: "#000000" }}
     >
-      {/* Key light from upper-left — catches the drop edge */}
-      <ambientLight intensity={0.2} />
-      <directionalLight
-        position={[-3, 8, 5]}
-        intensity={2.5}
-        color="#a8d4ff"
-      />
-      <directionalLight
-        position={[4, 4, -2]}
-        intensity={0.8}
-        color="#ffffff"
-      />
-      {/* Soft fill from below to show the underside of the drop */}
-      <pointLight position={[0, -1, 3]} intensity={0.5} color="#4488cc" />
+      <color attach="background" args={["#000000"]} />
 
-      <Droplet ref={dropletRef} onImpact={onImpact} />
+      {/* Key light from upper-left — gives drop a highlight edge */}
+      <ambientLight intensity={0.12} />
+      <directionalLight position={[-3, 9, 5]} intensity={2.2} color="#9ac8ff" />
+      <directionalLight position={[5, 4, -3]} intensity={0.55} color="#ffffff" />
+      {/* Soft under-fill so the drop bottom isn't completely black */}
+      <pointLight position={[0, -1, 4]} intensity={0.4} color="#3a7acc" distance={18} decay={2} />
+
+      <WaterPlane uniforms={uniforms} />
+      <Droplet ref={dropletRef} onImpact={handleImpact} />
     </Canvas>
   );
 });
