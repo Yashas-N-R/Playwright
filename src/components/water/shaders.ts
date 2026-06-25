@@ -80,6 +80,7 @@ export const fragmentShader = /* glsl */ `
     float NdotL = max(dot(N, L), 0.0);
     float NdotH = max(dot(N, H), 0.0);
     float NdotV = max(dot(N, V), 0.0001);
+    float rippleMask = smoothstep(0.008, 0.045, abs(vHeight));
 
     // Blinn-Phong specular — tight highlight on wave crests
     float spec = pow(NdotH, 110.0) * 0.28;
@@ -95,6 +96,8 @@ export const fragmentShader = /* glsl */ `
     color += vec3(0.38, 0.58, 1.0) * spec;
     // Fresnel rim
     color += vec3(0.04, 0.08, 0.15) * fresnel;
+    // Ripple crest boost so the ring itself reads as bright white.
+    color += vec3(1.0) * rippleMask * 0.95;
 
     color *= vignette * uIntro;
 
