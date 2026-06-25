@@ -1,102 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="BIT — Build It Together. Practical guides on test automation, Playwright, and building confidence in your test suites." />
-  <title>BIT — Build It Together</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/styles.css" />
-</head>
-<body>
-  <div class="bg-grid" aria-hidden="true"></div>
-
-  <header class="header">
-    <a href="/" class="logo">BIT</a>
-    <nav class="nav">
-      <a href="#docs">Docs</a>
-      <a href="#about">About</a>
-      <a href="#contact" class="nav-cta">Contact</a>
-    </nav>
-  </header>
-
-  <main>
-    <section class="hero">
-      <p class="eyebrow">Build It Together</p>
-      <h1>Test smarter.<br />Ship with confidence.</h1>
-      <p class="tagline">QA by profession, developer by passion.</p>
-      <p class="hero-desc">
-        Practical guides on Playwright, test automation, and validating that your scripts
-        actually catch bugs — not just turn the pipeline green.
-      </p>
-      <div class="hero-actions">
-        <a href="#docs" class="btn btn-primary">Explore Docs</a>
-        <a href="mailto:yashas07022002@gmail.com" class="btn btn-secondary">Get in Touch</a>
-      </div>
-    </section>
-
-    <section id="docs" class="section docs">
-      <h2>Documentation</h2>
-      <p class="section-desc">Deep-dive guides built for developers moving into testing with AI.</p>
-      <div class="cards">
-        <a href="https://app.notion.com/p/2cb5ebfce0ef80c1b95cd22750e4244b" class="card" target="_blank" rel="noopener noreferrer">
-          <span class="card-tag">Playwright</span>
-          <h3>Playwright Complete Guide</h3>
-          <p>Locators, actions, assertions, tables, date pickers, frames, parallelism, fixtures, and framework design.</p>
-          <span class="card-link">Read guide →</span>
-        </a>
-        <a href="https://app.notion.com/p/38a5ebfce0ef8186a1fef0203fcbcfdc" class="card" target="_blank" rel="noopener noreferrer">
-          <span class="card-tag">Test Engineering</span>
-          <h3>Will U Wait Until Production Code Breaks?</h3>
-          <p>How to validate your automation actually catches bugs — mutation testing, assertion quality, and AI pitfalls.</p>
-          <span class="card-link">Read guide →</span>
-        </a>
-        <div class="card card-soon">
-          <span class="card-tag">Coming Soon</span>
-          <h3>Pure SDET Content</h3>
-          <p>Dedicated SDET tracks, interview prep, and advanced framework patterns. Stay tuned.</p>
-          <span class="card-link muted">On the way</span>
-        </div>
-      </div>
-    </section>
-
-    <section id="about" class="section about">
-      <div class="about-inner">
-        <div class="about-text">
-          <h2>About BIT</h2>
-          <p>
-            <strong>BIT (Build It Together)</strong> is a knowledge hub for engineers who write code
-            and care about quality. Whether you're a developer picking up Playwright for the first time
-            or a QA engineer levelling up your framework skills — the goal is the same: build tests
-            that protect real business logic, not just happy paths.
-          </p>
-          <p>
-            Shift-left is here. AI can generate tests in minutes. The hard part isn't writing tests —
-            it's knowing whether they actually work. That's what BIT is built around.
-          </p>
-        </div>
-        <div class="about-profile">
-          <div class="avatar">YN</div>
-          <h3>Yashas Narayanaswamy</h3>
-          <p class="profile-tagline">QA by profession, developer by passion.</p>
-          <a href="mailto:yashas07022002@gmail.com" class="profile-email">yashas07022002@gmail.com</a>
-        </div>
-      </div>
-    </section>
-
-    <section id="contact" class="section contact">
-      <h2>Let's build together</h2>
-      <p>Questions, feedback, or collaboration — reach out anytime.</p>
-      <a href="mailto:yashas07022002@gmail.com" class="btn btn-primary">yashas07022002@gmail.com</a>
-    </section>
-  </main>
-
-  <footer class="footer">
-    <p><strong>BIT</strong> — Build It Together</p>
-    <p>Yashas Narayanaswamy · <a href="mailto:yashas07022002@gmail.com">yashas07022002@gmail.com</a></p>
-    <p class="footer-copy">&copy; 2026 BIT. All rights reserved.</p>
-  </footer>
-</body>
+<!doctype html>
+<html lang="en" class="bg-black">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="BIT — Build It Together. QA by profession, developer by passion." />
+    <title>BIT — Build It Together</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600&family=Geist:wght@300;400;500;600;700;900&display=swap" rel="stylesheet" />
+  </head>
+  <body class="bg-black text-white">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
 </html>

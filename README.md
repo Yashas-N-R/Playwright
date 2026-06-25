@@ -1,56 +1,77 @@
 # BIT — Build It Together
 
-Landing page for **BIT (Build It Together)** — practical guides on test automation, Playwright, and building confidence in your test suites.
+Landing site for **BIT (Build It Together)** built with React + Vite + Tailwind, featuring a 3D water-ripple hero powered by react-three-fiber.
 
-**QA by profession, developer by passion.**
+**QA by profession, developer by passion.** — Yashas Narayanaswamy
+
+## Stack
+
+- **React 18** + **TypeScript** + **Vite**
+- **Tailwind CSS 3**
+- **react-three-fiber** + **three.js** — custom GLSL water shader with ripple displacement
+- **framer-motion** — text morph animation
+- **Geist** font (matches Vercel aesthetic)
+
+## Hero Animation
+
+- A 3D water plane rendered with a custom vertex shader (ripple displacement) and a monochrome fragment shader (black surface, white crests).
+- On page load — and every time you click **BIT** — a glowing droplet falls and impacts the water, sending out a radial ripple.
+- The text morphs: **BIT** → **Build. It. Together.** → back to **BIT**.
 
 ## Deploy to Vercel
 
-### Option 1 — Vercel Dashboard (easiest)
+### Option 1 — Vercel Dashboard
 
-1. Push this repo to GitHub
+1. Push to GitHub
 2. Go to [vercel.com/new](https://vercel.com/new)
-3. Import your GitHub repository
-4. Vercel auto-detects it as a static site — click **Deploy**
-5. Add your custom domain under **Project Settings → Domains**
+3. Import the repository
+4. Framework Preset: **Vite** (auto-detected)
+5. Build Command: `npm run build`
+6. Output Directory: `dist`
+7. Click **Deploy**
 
 ### Option 2 — Vercel CLI
 
 ```bash
 npm i -g vercel
-vercel
-```
-
-Follow the prompts. For production:
-
-```bash
-vercel --prod
+vercel        # preview
+vercel --prod # production
 ```
 
 ### Custom Domain
 
-1. In Vercel: **Project → Settings → Domains → Add**
-2. Enter your domain (e.g. `buildittogether.com`)
-3. At your domain registrar, add the DNS records Vercel shows you:
-   - **A record** → `76.76.21.21` (or what Vercel provides)
-   - **CNAME** for `www` → `cname.vercel-dns.com`
+In **Project → Settings → Domains** add your domain. Vercel gives you the DNS records to add at your registrar (one A record + one CNAME for `www`). SSL is automatic.
 
-SSL is automatic and free.
-
-## Local Preview
+## Local Development
 
 ```bash
-npx serve .
+npm install
+npm run dev      # http://localhost:5173
+npm run build    # production build → dist/
+npm run preview  # preview the built site
 ```
-
-Open [http://localhost:3000](http://localhost:3000)
 
 ## Structure
 
 ```
-index.html    # Landing page
-styles.css    # Styles
-vercel.json   # Vercel config
+src/
+├── App.tsx
+├── main.tsx
+├── styles/globals.css
+└── components/
+    ├── Header.tsx
+    ├── Hero.tsx           # composes WaterScene + BITText
+    ├── BITText.tsx        # BIT ↔ Build. It. Together. morph
+    ├── Manifesto.tsx
+    ├── Docs.tsx
+    ├── About.tsx
+    ├── Footer.tsx
+    └── water/
+        ├── WaterScene.tsx # r3f Canvas, lights, scene composition
+        ├── WaterPlane.tsx # high-subdivision plane with ShaderMaterial
+        ├── Droplet.tsx    # falling sphere with imperative drop()
+        ├── shaders.ts     # GLSL vertex + fragment
+        └── types.ts       # uniforms factory & types
 ```
 
 ## Contact
