@@ -77,11 +77,6 @@ export default function Hero() {
           Click <span className="text-white/70">BIT</span> to ripple again
         </p> */}
       </div>
-
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/30 z-10 pointer-events-none">
-        <span className="text-[10px] font-mono tracking-[0.3em]">SCROLL</span>
-        <div className="w-px h-10 bg-gradient-to-b from-white/40 to-transparent" />
-      </div>
     </section>
   );
 }

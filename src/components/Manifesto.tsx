@@ -2,7 +2,7 @@ import ComingSoonBadge from "./ComingSoonBadge";
 
 export default function Manifesto() {
   return (
-    <section id="manifesto" className="relative border-t border-white/[0.06] py-32">
+    <section id="manifesto" className="relative border-t border-white/[0.06] py-10 md:py-12">
       <div className="mx-auto max-w-4xl px-6">
         <p className="font-mono text-[10px] tracking-[0.3em] text-white/40 uppercase mb-6">
           / Manifesto
@@ -27,22 +27,22 @@ export default function Manifesto() {
           .
         </p>
 
-        <div className="mt-16 grid sm:grid-cols-3 gap-px bg-white/[0.06]">
+        <div className="mt-8 grid sm:grid-cols-3 gap-px bg-white/[0.06]">
           {[
             {
               k: "01",
               h: "About RedMoon AI",
-              p: "Code without quality is technical debt waiting to ship. We build with verification in the loop.",
+              p: "We design the architecture, design the landing page and build the security boiler plate.",
             },
             {
               k: "02",
               h: "Together",
-              p: "Developers and SDETs aren't separate species. Shift-left works when both speak the same language.",
+              p: "U can jump into vibe coding your business logic with confidence.",
             },
             {
               k: "03",
               h: "Prove It",
-              p: "Green pipelines lie. We test the tests — mutation, assertions, real bug coverage.",
+              p: "Deploy the product and start your journey.",
             },
           ].map((item) => (
             <div

@@ -1,29 +1,30 @@
 const DOCS = [
+  
   {
-    tag: "Playwright",
-    title: "The Complete Playwright Guide",
-    desc: "Locators, actions, assertions, tables, date pickers, frames, parallelism, fixtures, and full framework design.",
-    href: "https://app.notion.com/p/2cb5ebfce0ef80c1b95cd22750e4244b",
-  },
-  {
-    tag: "Test Engineering",
+    tag: "DEV Series",
     title: "Will U Wait Until Production Code Breaks?",
     desc: "How to know your automation actually catches bugs — mutation testing, assertion audits, and AI pitfalls.",
     href: "https://app.notion.com/p/38a5ebfce0ef8186a1fef0203fcbcfdc",
   },
   {
+    tag: "SDET Series",
+    title: "Want to add automation to your product? Here's how playwright works.",
+    desc: "Locators, actions, assertions, tables, date pickers, frames, parallelism, fixtures, and full framework design.",
+    href: "https://app.notion.com/p/2cb5ebfce0ef80c1b95cd22750e4244b",
+  },
+  {
     tag: "Coming Soon",
-    title: "Pure SDET Track",
-    desc: "Dedicated SDET fundamentals, interview prep, and advanced framework patterns. Stay tuned.",
+    title: "Context Engineering",
+    desc: "How to optimize tokens for less billing and more accuracy.",
     href: null,
   },
 ];
 
 export default function Docs() {
   return (
-    <section id="docs" className="relative border-t border-white/[0.06] py-32">
+    <section id="docs" className="relative border-t border-white/[0.06] py-10 md:py-12">
       <div className="mx-auto max-w-6xl px-6">
-        <div className="flex items-end justify-between mb-12 flex-wrap gap-4">
+        <div className="flex items-end justify-between mb-6 flex-wrap gap-4">
           <div>
             <p className="font-mono text-[10px] tracking-[0.3em] text-white/40 uppercase mb-6">
               / Documentation
@@ -33,7 +34,7 @@ export default function Docs() {
             </h2>
           </div>
           <p className="text-white/50 max-w-sm text-sm">
-            Deep-dive guides written for developers moving into testing with AI.
+           These will be the guides that will help you build whatever you are looking for.
           </p>
         </div>
 

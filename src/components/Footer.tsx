@@ -1,14 +1,13 @@
 export default function Footer() {
   return (
-    <footer className="relative border-t border-white/[0.06] py-16">
+    <footer className="relative border-t border-white/[0.06] py-10 md:py-12">
       <div className="mx-auto max-w-6xl px-6 grid sm:grid-cols-3 gap-10">
         <div>
           <p className="font-mono text-sm tracking-[0.2em] text-white mb-2">
             BIT
           </p>
           <p className="text-white/40 text-xs leading-relaxed max-w-xs">
-            Build It Together — practical guides on test automation and
-            engineering quality.
+            Build It Together — Turn your prototype to production ready.
           </p>
         </div>
 

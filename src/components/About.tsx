@@ -1,12 +1,12 @@
 export default function About() {
   return (
-    <section id="about" className="relative border-t border-white/[0.06] py-32">
+    <section id="about" className="relative border-t border-white/[0.06] py-10 md:py-12">
       <div className="mx-auto max-w-4xl px-6">
         <p className="font-mono text-[10px] tracking-[0.3em] text-white/40 uppercase mb-6">
           / About
         </p>
 
-        <h2 className="text-4xl sm:text-5xl font-black tracking-tight mb-10">
+        <h2 className="text-4xl sm:text-5xl font-black tracking-tight mb-5">
           One engineer.
           <br />
           <span className="text-white/40">Two perspectives.</span>
@@ -16,20 +16,14 @@ export default function About() {
           <div className="space-y-5 text-white/70 leading-relaxed">
             <p>
               <span className="text-white font-medium">BIT</span> is a knowledge
-              hub built for engineers who write code <em>and</em> care about
-              quality. It exists because the line between developer and SDET is
-              getting thinner every year — and because AI-generated tests
-              without business context will silently rot your suite.
+              hub built for everyone who dream of building something new and bring it into reality.
+              We are bridging gap between technicality and creativity that connects the dreamers to the doers.
             </p>
             <p>
-              Whether you're picking up Playwright for the first time or
-              levelling up your framework patterns, the goal is the same: build
-              tests that protect real business logic, not just happy paths.
+              Whether you're building things for the first time or enhanching the exisiting ones, we are here to help you.
             </p>
             <p className="text-white/40 text-sm italic">
-              Shift-left is here. AI can generate tests in minutes. The hard
-              part isn't writing tests — it's knowing whether they actually
-              work.
+              With AI becoming more and more powerful, we are here to help you use it to its full potential and gain confidence in your work.
             </p>
           </div>
 
