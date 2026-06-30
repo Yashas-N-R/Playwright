@@ -4,8 +4,9 @@ import BITText, { BITPhase } from "./BITText";
 
 export default function Hero() {
   const sceneRef   = useRef<WaterSceneHandle>(null);
-  const [phase, setPhase] = useState<BITPhase>("idle");
+  const [phase, setPhase] = useState<BITPhase>("hidden");
   const timersRef  = useRef<number[]>([]);
+  const autoStartedRef = useRef(false);
 
   const clearTimers = useCallback(() => {
     timersRef.current.forEach((t) => window.clearTimeout(t));
@@ -14,26 +15,26 @@ export default function Hero() {
 
   const triggerSequence = useCallback(() => {
     clearTimers();
-    setPhase("idle");
+    setPhase("hidden");
     sceneRef.current?.dropDroplet();
   }, [clearTimers]);
+
+  const handleSceneReady = useCallback(() => {
+    if (autoStartedRef.current) return;
+    autoStartedRef.current = true;
+    triggerSequence();
+  }, [triggerSequence]);
 
   const onImpact = useCallback(() => {
     setPhase("expanding");
     timersRef.current.push(
-      window.setTimeout(() => setPhase("expanded"),  900),
-      window.setTimeout(() => setPhase("merging"),  3200),
-      window.setTimeout(() => setPhase("idle"),     4100),
+      window.setTimeout(() => setPhase("expanded"), 700),
+      window.setTimeout(() => setPhase("merging"), 2500),
+      window.setTimeout(() => setPhase("idle"), 3300),
     );
   }, []);
 
-  useEffect(() => {
-    const t = window.setTimeout(() => triggerSequence(), 700);
-    return () => {
-      window.clearTimeout(t);
-      clearTimers();
-    };
-  }, [triggerSequence, clearTimers]);
+  useEffect(() => () => clearTimers(), [clearTimers]);
 
   return (
     <section
@@ -42,7 +43,7 @@ export default function Hero() {
     >
       {/* 3D canvas fills the whole hero — water plane + droplet */}
       <div className="absolute inset-0">
-        <WaterScene ref={sceneRef} onImpact={onImpact} />
+        <WaterScene ref={sceneRef} onImpact={onImpact} onReady={handleSceneReady} />
       </div>
 
       {/* Vignette — keeps edges dark, no coloured tint */}
@@ -57,7 +58,7 @@ export default function Hero() {
       {/* Text overlay */}
       <div className="relative z-10 h-full flex flex-col items-center justify-center pointer-events-none">
         <p className="font-mono text-[10px] sm:text-xs tracking-[0.4em] text-white/40 mb-8 uppercase">
-          Build It Together
+         Why pay business's when you can build your product?
         </p>
 
         <button
@@ -69,12 +70,12 @@ export default function Hero() {
         </button>
 
         <p className="mt-10 text-white/70 text-sm sm:text-base tracking-wide italic font-light">
-          QA by profession, developer by passion.
+          Turn your prototype to production ready.
         </p>
 
-        <p className="mt-3 text-white/30 text-xs font-mono tracking-[0.25em] uppercase">
+        {/* <p className="mt-3 text-white/30 text-xs font-mono tracking-[0.25em] uppercase">
           Click <span className="text-white/70">BIT</span> to ripple again
-        </p>
+        </p> */}
       </div>
 
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/30 z-10 pointer-events-none">

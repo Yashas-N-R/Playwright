@@ -29,7 +29,7 @@ export default function Docs() {
               / Documentation
             </p>
             <h2 className="text-4xl sm:text-5xl font-black tracking-tight">
-              Read the docs.
+              Our help begins here.
             </h2>
           </div>
           <p className="text-white/50 max-w-sm text-sm">

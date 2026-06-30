@@ -40,10 +40,10 @@ export default function Footer() {
             Contact
           </p>
           <a
-            href="mailto:yashas07022002@gmail.com"
+            href="mailto:yashas.narayanaswamy@buildittogether.com"
             className="text-sm text-white/70 hover:text-white transition-colors break-all"
           >
-            yashas07022002@gmail.com
+            yashas.narayanaswamy@buildittogether.com
           </a>
           <p className="text-xs text-white/30 mt-2 italic">
             Yashas Narayanaswamy

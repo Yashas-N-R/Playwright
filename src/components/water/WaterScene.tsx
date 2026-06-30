@@ -16,15 +16,33 @@ export interface WaterSceneHandle {
 
 interface Props {
   onImpact: () => void;
+  onReady?: () => void;
 }
 
 const WaterScene = forwardRef<WaterSceneHandle, Props>(function WaterScene(
-  { onImpact },
+  { onImpact, onReady },
   ref,
 ) {
   const uniforms      = useMemo(() => createWaterUniforms(), []);
   const rippleIdx     = useRef(0);
   const dropletRef    = useRef<DropletHandle>(null);
+  const pendingDrop   = useRef(false);
+  const readyFiredRef = useRef(false);
+
+  const dropDroplet = useCallback(() => {
+    if (dropletRef.current) {
+      pendingDrop.current = false;
+      dropletRef.current.drop();
+    } else {
+      pendingDrop.current = true;
+    }
+  }, []);
+
+  const handleDropletMounted = useCallback(() => {
+    if (readyFiredRef.current) return;
+    readyFiredRef.current = true;
+    onReady?.();
+  }, [onReady]);
 
   const spawnRipple = useCallback(() => {
     const slot = rippleIdx.current % MAX_RIPPLES;
@@ -39,8 +57,8 @@ const WaterScene = forwardRef<WaterSceneHandle, Props>(function WaterScene(
   }, [spawnRipple, onImpact]);
 
   useImperativeHandle(ref, () => ({
-    dropDroplet() { dropletRef.current?.drop(); },
-  }), []);
+    dropDroplet,
+  }), [dropDroplet]);
 
   return (
     <Canvas
@@ -59,7 +77,7 @@ const WaterScene = forwardRef<WaterSceneHandle, Props>(function WaterScene(
       <pointLight position={[0, -1, 4]} intensity={0.4} color="#3a7acc" distance={18} decay={2} />
 
       <WaterPlane uniforms={uniforms} />
-      <Droplet ref={dropletRef} onImpact={handleImpact} />
+      <Droplet ref={dropletRef} onImpact={handleImpact} onMounted={handleDropletMounted} />
     </Canvas>
   );
 });

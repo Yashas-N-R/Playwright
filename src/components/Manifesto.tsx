@@ -1,3 +1,5 @@
+import ComingSoonBadge from "./ComingSoonBadge";
+
 export default function Manifesto() {
   return (
     <section id="manifesto" className="relative border-t border-white/[0.06] py-32">
@@ -5,17 +7,31 @@ export default function Manifesto() {
         <p className="font-mono text-[10px] tracking-[0.3em] text-white/40 uppercase mb-6">
           / Manifesto
         </p>
-        <h2 className="text-4xl sm:text-6xl font-black tracking-tight leading-[1.05] text-balance">
-          Test smarter.
+        <ComingSoonBadge />
+        <h1 className="text-4xl sm:text-6xl font-black tracking-tight leading-[1.05] text-balance">
+          <span className="text-red-500">RED</span>
+          <span className="text-blue-500">MOON</span>
+          {" "}
+          <span className="text-white">AI</span>
           <br />
-          <span className="text-white/40">Ship with confidence.</span>
-        </h2>
+          <span className="text-white/40">Vibe code with confidence.</span>
+        </h1>
+        <p className="mt-6 text-sm sm:text-base text-white/50 max-w-lg leading-relaxed">
+          We&apos;re building something new. Until then,{" "}
+          <a
+            href="#docs"
+            className="text-white/80 underline underline-offset-4 decoration-white/30 hover:text-white hover:decoration-white/60 transition-colors"
+          >
+            read our docs below
+          </a>
+          .
+        </p>
 
         <div className="mt-16 grid sm:grid-cols-3 gap-px bg-white/[0.06]">
           {[
             {
               k: "01",
-              h: "Build It",
+              h: "About RedMoon AI",
               p: "Code without quality is technical debt waiting to ship. We build with verification in the loop.",
             },
             {

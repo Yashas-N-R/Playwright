@@ -9,24 +9,38 @@ export interface DropletHandle {
 
 interface Props {
   onImpact: () => void;
+  onMounted?: () => void;
 }
 
 // Start high enough to be in upper frame, fall to surface
-const START_Y   = 7.0;
+const START_Y   = 5.2;
 const SURFACE_Y = 0.05;
-const FALL_DUR  = 0.90;   // seconds
+const FALL_DUR  = 0.72;   // seconds
 const SPLAT_DUR = 0.16;   // squish-into-surface duration
 
 type Phase = "idle" | "falling" | "splat";
 
+const MAX_FRAME_DELTA = 1 / 30;
+
 const Droplet = forwardRef<DropletHandle, Props>(function Droplet(
-  { onImpact },
+  { onImpact, onMounted },
   ref,
 ) {
   const meshRef  = useRef<THREE.Mesh>(null);
   const phaseRef = useRef<Phase>("idle");
   const startRef = useRef(0);
   const clockRef = useRef(0);
+  const pendingStartRef = useRef(false);
+  const mountedRef = useRef(false);
+
+  const beginDrop = (mesh: THREE.Mesh) => {
+    phaseRef.current = "falling";
+    startRef.current = clockRef.current;
+    mesh.visible = true;
+    mesh.position.set(0, START_Y, 0);
+    mesh.rotation.set(0, 0, 0);
+    mesh.scale.setScalar(1);
+  };
 
   const geometry = useMemo(() => createTeardropGeometry(), []);
   const material = useMemo(
@@ -46,21 +60,32 @@ const Droplet = forwardRef<DropletHandle, Props>(function Droplet(
 
   useImperativeHandle(ref, () => ({
     drop() {
-      phaseRef.current = "falling";
-      startRef.current = clockRef.current;
       const mesh = meshRef.current;
-      if (!mesh) return;
-      mesh.visible = true;
-      mesh.position.set(0, START_Y, 0);
-      mesh.rotation.set(0, 0, 0);
-      mesh.scale.setScalar(1);
+      if (!mesh) {
+        pendingStartRef.current = true;
+        return;
+      }
+      pendingStartRef.current = false;
+      beginDrop(mesh);
     },
   }));
 
   useFrame((_, delta) => {
-    clockRef.current += delta;
+    clockRef.current += Math.min(delta, MAX_FRAME_DELTA);
     const mesh = meshRef.current;
-    if (!mesh || phaseRef.current === "idle") return;
+    if (!mesh) return;
+
+    if (!mountedRef.current) {
+      mountedRef.current = true;
+      onMounted?.();
+    }
+
+    if (pendingStartRef.current) {
+      pendingStartRef.current = false;
+      beginDrop(mesh);
+    }
+
+    if (phaseRef.current === "idle") return;
 
     const elapsed = clockRef.current - startRef.current;
 

@@ -42,10 +42,10 @@ export default function About() {
               QA by profession, developer by passion.
             </p>
             <a
-              href="mailto:yashas07022002@gmail.com"
+              href="mailto:yashas.narayanaswamy@buildittogether.com"
               className="block mt-4 text-xs font-mono text-white/70 hover:text-white break-all"
             >
-              yashas07022002@gmail.com
+              yashas.narayanaswamy@buildittogether.com
             </a>
           </div>
         </div>

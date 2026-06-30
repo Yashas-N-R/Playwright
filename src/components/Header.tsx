@@ -32,7 +32,7 @@ export default function Header() {
             ABOUT
           </a>
           <a
-            href="mailto:yashas07022002@gmail.com"
+            href="mailto:yashas.narayanaswamy@buildittogether.com"
             className="px-3 py-1.5 border border-white/20 hover:border-white hover:bg-white hover:text-black transition-all rounded-full"
           >
             CONTACT
